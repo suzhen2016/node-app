@@ -1,0 +1,27 @@
+{
+  "name": "smdk-node-api",
+  "version": "0.9.8",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node api/web_server/index",
+    "start:ws": "node api/websocket/index",
+    "dev": "pm2 start api/web_server/index.js",
+    "start:db": "sh ./start_mongodb.sh"
+  },
+  "author": "suzhen",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "crypto": "^1.0.1",
+    "koa": "^2.7.0",
+    "koa-body": "^4.0.8",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "mongodb": "^3.2.7",
+    "request": "^2.88.0",
+    "ws": "^7.0.0"
+  }
+}

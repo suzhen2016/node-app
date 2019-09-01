@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>调查问卷数据</title>
+</head>
+<style>
+    body,html {height: 100%;margin: 0; box-sizing: border-box;overflow: hidden;}
+    .box,.list {
+        width: 500px;
+        margin: 50px auto;
+    }
+    .list {height: calc(100% - 388px);overflow-y: auto;}
+    input:focus,textarea:focus {
+        outline: none;
+    }
+    .pro-o {
+        margin-top: 40px;
+    }
+    .pro-t,.pro-o label{
+        font-size: 14px;
+    }
+    .pro-t input {
+        border:1px solid #ddd;
+        height: 25px;
+        width: 300px;
+        border-radius: 4px;
+        padding:0 5px;
+    }
+    .pro-o textarea {
+        border:1px solid #ddd;
+        border-radius: 4px;
+        width: 300px;
+        min-height: 100px;
+        padding: 0 5px;
+        resize: none;
+    }
+    .pro-o label {
+        vertical-align: top;
+    }
+    .btn button {
+        margin-top: 20px;
+        margin-left: 70px;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 16px;
+        line-height: 16px;
+        display: inline-block;
+    }
+    .item {
+        list-style: none;
+    }
+    .item p {font-size: 14px;}
+    .item button {border-radius: 4px;font-size: 14px;padding: 3px 10px;float: right;margin-left: 20px;cursor: pointer;}
+</style>
+<body>
+    <h3>苏氏之道</h3>
+    <div class="box">
+        <div class='pro-t'>
+            <label for="i-title">标题:</label>
+            <input type="text" placeholder="请填写标题" id='i-title'>
+        </div>
+        <div class="pro-o">
+            <label for="i-option">选项:</label> 
+            <textarea type="text" id='i-option' placeholder="请填写选项，使用'|'分隔选项"></textarea>
+        </div>
+        <div class='btn'>
+            <button id='btn'>提交</button> <button class='clear'>清除</button>
+        </div>
+    </div>
+    <div class="list">
+    </div>
+</body>
+<script src="./jquery.js"></script>
+<script>
+    $(function () {
+        // 初始化数据
+        var http = location.origin || 'http://172.20.13.179:5000';
+        getList();
+        // 提交
+        $('#btn').click(function () {
+            var obj = getParam(),url='';
+            if($('#btn').data('cg')){
+                url = http + '/api/problem/update_one';
+            }else url = http + '/api/problem/insert_problem';
+            obj._id = $('#btn').data('cg');
+            $.ajax({
+                url:url,
+                type: 'POST',
+                data: obj,
+                success : function(res){
+                    if(res.model && res.status=='success'){
+                        getList(); // 重新加载
+                        removeData(); // 清除数据
+                    }
+                    
+                }
+            })
+        })
+        function getParam(){
+            var title = $('#i-title').val();
+            var ctx = $('#i-option').val();
+            var arr = [];
+            ctx = ctx.replace(/\s/g, '').split('|').forEach(item => {
+                var s_a = item.split(':');
+                if (s_a.length===2){
+                    var i = {
+                        o : s_a[0],
+                        ctx : s_a[1]
+                    }
+                    arr.push(i);
+                }else if(s_a[0] && s_a.length ==1){
+                    alert('选项请区分选择项与选择内容')
+                }
+            });
+            return obj = {
+                title : title,
+                option : arr
+            }
+        }
+        $('.clear').on('click',removeData)
+        function removeData(){
+            $('#btn').removeData();
+            $('#i-option').val('');
+            $('#i-title').val('');
+        }
+        // 获取现有的题目
+        function getList(){
+            $.ajax({
+                url:http + '/api/problem/get_list',
+                type: 'POST',
+                data: '',
+                success : function(res){
+                    if(res.status=='success' && res.model.length>0){
+                        var li = '';
+                        res.model.forEach(item=>{
+                            var str = '';
+                            item.option.forEach(i=>{
+                                str += `<p>${i.o}：${i.ctx}<p>`;
+                            })
+                            li += `<li class='item'><h4>${item.title}<button class='dele' data-id='${item._id}'>删除</button><button class='change' data-id='${item._id}'>修改</button></h4>${str}</li>`;
+                        })
+                        $('.list')[0].innerHTML = li;
+                        changeTopic() // 绑定按钮事件
+                    }
+                }
+            })
+        }
+        // 选择事件
+        function changeTopic() {
+            $('.list>li .change').each(function(index){
+                $(this).on('click',function(){
+                    let id = $(this).data("id");
+                    if(!id) {
+                        alert('请选择要修改的选项')
+                        return false;
+                    }
+                    getFindOne(id) // 查找并修改
+                })
+            })
+            $('.list>li .dele').each(function(index){
+                $(this).on('click',function(){
+                    let id = $(this).data("id");
+                    if(!id) {
+                        alert('请选择要修改的选项')
+                        return false;
+                    }
+                    dele(this,id) // 删除
+                })
+            })
+        }
+        // 查找要修改的数据并填充到可修改区域
+        function getFindOne(id){
+            $.ajax({
+                url:http + '/api/problem/get_one',
+                type: 'POST',
+                data: {_id:id},
+                success : function(res){
+                    if(res.status==='success' && res.model){
+                        $('#i-title').val(res.model.title);
+                        var str = '';
+                        res.model.option.forEach( (i,index)=>{
+                            if (index===res.model.option.length - 1){
+                                str +=`${i.o}:${i.ctx} \n`;
+                            }else str +=`${i.o}:${i.ctx} | \n`;
+                        })
+                        $('#i-option').val(str);
+                        $('#btn').data('cg',res.model._id);
+                    }
+                }
+            })
+        }
+        function dele(e,params) {
+            $.ajax({
+                url:http + '/api/problem/dele',
+                type: 'POST',
+                data: {_id:params},
+                success : function(res){
+                    if(res.status==='success' && res.model){
+                        $(e).closest('li').remove();
+                    }
+                }
+            })
+        }
+    })
+
+</script>
+</html>
+
