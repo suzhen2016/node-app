@@ -6,12 +6,12 @@ const response = require('../untils/model/respones')
 const ip = require('../untils/factory/ip')
 const path = require('path')
 const static = require('koa-static')
-const crypto = require('crypto');
-// const setting = require('../untils/settings')
+const Encryp = require('../untils/common/Encryp.js')
+
 let app = new Koa();
 app.use(bodyParser())
-// 本地静态文件访问
-app.use(static(path.join(__dirname, '../../web/public')));
+// 本地静态文件访问 直接访问该目录下的地址即可  http://172.20.13.160:5000/public/index.html
+app.use(static(path.join(__dirname, '../../web')));
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended: false}));
 // 设置请求头信息
@@ -54,42 +54,24 @@ router.use(a.routes())
 
 router.use('/api', api.routes()) //A:添加每个方法的请求加前缀，也可在 实例化router时添加参数注册prefix
 
-//注册使用路由中间件
+// 注册使用路由中间件
 app.use(router.routes())
 
 app.use(router.allowedMethods())//添加针对OPTIONS的响应处理，一些预检请求会先触发 OPTIONS 然后才是真正的请求
+
+// 测试加密解密
+let key = '1234567890123456';
+let iv = '2624750004598718';
+let data = 'GPKYYIEuwOPOftyyxBE1h25nQyu2oJGtzLBXpFq1U7S3gxP4i+ovg8BVD/ZUSUDuDZ2GAgJn2r+//6t6LqdJU2WrB/cZ2XbpSXkEFPUt31I=';
+let str = 'shed color since rude buyer enable rabbit rookie can harsh pause cheese'
+
+// let jie = Encryp.decrypt(key,iv,data);
+// let jia = Encryp.crypted(key,iv,str);
 
 //记录机器ip、端口
 global.server_ip = ip.get_ip();
 
 global.server_port = 5000;
-
-// odejs-aes-128-cbc加解密算法
-let key = '1234567890123456';
-let iv = '2624750004598718';
-let data = 'GPKYYIEuwOPOftyyxBE1h25nQyu2oJGtzLBXpFq1U7S3gxP4i+ovg8BVD/ZUSUDuDZ2GAgJn2r+//6t6LqdJU2WrB/cZ2XbpSXkEFPUt31I=';
-let str = 'shed color since rude buyer enable rabbit rookie can harsh pause cheese'
-// 解密
-var decrypt = function (key, iv, crypted) {
-    crypted = new Buffer(crypted, 'base64').toString('binary');
-    var decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
-    var decoded = decipher.update(crypted, 'binary', 'utf8');
-    decoded += decipher.final('utf8');
-    return decoded;
-};
-// 加密
-const crypted = (key, iv, data) => {
-    let cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
-    let crypted = cipher.update(data, 'utf8', 'binary');
-    crypted += cipher.final('binary');
-    crypted = new Buffer(crypted, 'binary').toString('base64');
-    return crypted;
-};
-
-let jie = decrypt(key,iv,data)
-let jia = crypted(key,iv,str)
-
-console.log(jie == str,jia == data)
 
 app.listen(global.server_port,global.server_ip, function () {
 

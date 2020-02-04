@@ -33,7 +33,7 @@ class Mongo {
 	        	try{
 	        		this.instance = await Mongo.get_db();
 
-                    db = this.instance.db('trade');
+                    db = this.instance.db('JUNENG');
                     
                     return resolve(db);
                     
@@ -42,7 +42,7 @@ class Mongo {
 	        	}
 	        }
 
-            db = this.instance.db('trade');
+            db = this.instance.db('JUNENG');
             
 	        return resolve(db);
         })

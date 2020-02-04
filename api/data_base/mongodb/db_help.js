@@ -109,7 +109,7 @@ class db_help{
             try{
                 let db_client = await db.getInstance();
 
-                let doc = await db_client.collection(collection,{strict: false}).insertOne(obj);
+                let doc = await db_client.collection(collection, {strict: false}).insertOne(obj);
                 
                 return resolve(doc.ops[0]);
             }catch(e){

@@ -14,7 +14,7 @@ class info{
             response.success(ctx,data)
         } catch (error) {
             // 处理报错
-            ctx.body = {code:201,message:'fail'}
+            ctx.body = {code: 201, message: 'fail'}
             console.log(error)
         }
     }
