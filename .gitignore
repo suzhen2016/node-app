@@ -2,7 +2,7 @@
 node_modules
 /dist
 /.history
-
+/api/web_server/upload/chunks
 # local env files
 .env.local
 .env.*.local

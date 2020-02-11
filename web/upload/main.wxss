@@ -1,0 +1,34 @@
+.main {
+  margin: 20px;
+}
+.main .box {
+  display: flex;
+  flex-direction: column;
+}
+.main .box button {
+  width: 70px;
+  height: 28px;
+  margin-top: 20px;
+  outline: none;
+  background-color: blueviolet;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #fff;
+}
+.main .box #drop-btn {
+  margin-top: 0;
+}
+.main .box #drop-box {
+  width: 300px;
+  height: 200px;
+  background-color: #f6f6f6;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  line-height: 200px;
+  color: #ccc;
+  text-align: center;
+}
+.main .box .process {
+  color: red;
+}

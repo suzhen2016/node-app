@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>大文件上传</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet/less" type="text/css" media="screen" href="./upload/main.less" />
+    
+</head>
+<body>
+    <div class="main">
+        <div class="box form">
+            <h4>1、formData上传图片文件</h4>
+            <input type="file" name="file" id="file" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg">
+            <button id="form-btn"> 上传 </button>
+        </div>
+        <div class="box drop">
+            <h4>2、拖拽上传图片文件</h4>
+            <div id="drop-box">请将图片文件拖拽到此区域进行上传</div>
+            <p>上传进度： <span class="process">0</span>/100</p>
+            <button id="drop-btn"> 上传 </button>
+            <div style="width: 200px;height: 200px;">
+                    <img class="img" src="" alt="">
+            </div>
+        </div>
+        <div class="box">
+            <button class="demo">测试</button>
+        </div>
+    </div>
+    
+</body>
+<!-- 引入支持less的文件进行预编译 -->
+<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.10.3/less.min.js" ></script> -->
+<script src="./upload/less.min.js"></script>
+<script src="../public/jquery.js"></script>
+<script src="./upload/main.js"></script>
+<!-- <script src="./upload/drop.js"></script> -->
+<script>
+   var upLoad = upload.use();
+   var NV = "http://192.168.0.101:5000";
+   $(function(){
+       // formdata提交数据
+       var ajax = function(url,data,cb) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                contentType: false,
+                processData: false,
+                success : cb || function(res){
+                    
+                },
+                error: function(res) {
+                    console.log('错误',res);
+                }
+            })
+       }
+       // json数据提交
+       var ajaxJson = function(url,data,cb){
+            $.ajax({
+                url:  url,
+                type: 'POST',
+                data: data,
+                success : cb || function(res){
+                },
+                error: function(res) {
+                    console.log('JSON错误',res);
+                }
+            })
+       }
+       var process = 0;  // 进度数
+
+
+       // formdata file文件上传
+       $('#form-btn').click(()=>{
+            var file = $('#file')[0].files[0];
+            if (!file) {
+                alert('请选择文件');
+                return false;
+            }
+            console.log(file)
+            url = NV + '/api/file/upload';
+            var formData = new FormData();
+            //接口接收参数 键值形式 添加到formData中
+            formData.append("file",file);
+            formData.append("type","image");
+            ajax(url, formData);
+           
+       })
+   
+        // drop的文件上传
+        $('#drop-btn').click(async()=>{
+            process = 0;
+            if(!upLoad.isHaveDropfile()){
+                alert('请拖拽文件进入拖拽区域');
+                return false;
+            }
+            // 获得文件
+            let file = upLoad.getDropFile();
+            var size = Math.floor(file.size / 150);
+            // 文件切片数
+            var blobs = upLoad.createFileChunk(file, size);
+            console.log(file.name + '切片数' + blobs.length)
+            uploadChunks({chunks: blobs, file});
+            // 文件转base64
+            // var base64 = await upLoad.fileToBlob(file);
+
+            // base64转blob二进制
+            // var blob = upLoad.base64ToBlob(base64);
+        });
+
+        // 上传各个切片
+        async function uploadChunks (data){
+            const  url = NV + '/api/file/upload-chunk';
+            var hash = new Date().valueOf();
+
+            const requestList = data.chunks
+            .map((chunk, index) => {
+                const formData = new FormData();
+
+                formData.append("file", chunk.file);
+                formData.append("hash", hash);
+                formData.append("index", index);
+                formData.append("type","image");
+                formData.append("name", data.file.name);
+                return { formData };
+
+            })
+            // 转化成异步请求函数
+            .map(async ({ formData }) => {
+                
+                ajax( url,formData,function(res){
+                    if(res.code == 0) {
+                        updateProcess(data.chunks.length + 3);
+                    }
+                });
+
+            });
+             // 并发发送切片请求
+            Promise.all(requestList);
+
+            setTimeout(()=>{
+                ajaxJson( NV + '/api/file/chunk-over',{
+                    type: 'image',
+                    hash: hash,
+                    name: data.file.name,
+                    sum: requestList.length
+                },function(res){
+                    if(res.code == 0) {
+                        $('.process:first').text(100);
+                        process = 0;
+                    }
+                    console.log(res.message)
+                });
+            },2000)
+
+        };
+        
+        function updateProcess(len) {
+            process+=1;
+            var pro = Math.floor(process / len * 100);
+            $('.process:first').text(pro);
+        }
+
+        $('.demo:first').click(function(){
+            ajaxJson( NV + '/api/file/chunk-over',{
+                type: 'image',
+                hash: '1581325511702',
+                name: '前.png',
+                sum: 14
+            })
+        })
+ 
+   });
+
+</script>
+</html>

@@ -49,13 +49,35 @@
         keepExtensions: true  //  保存图片的扩展名
     }
     });
-    router.post('/users', koaBody,(ctx) => {
+    router.post('/users', koaBody, (ctx) => {
         console.log(ctx.request.body);
         ctx.body = JSON.stringify(ctx.request.body);
         }
     );
     app.use(router.routes());
   ```
+
+  .formdata传值接收
+  
+  ```javascript
+    const multiparty = require("koa2-multiparty");
+    // 上传文件 在定义路由的方法里注入组件
+    router.post('/upload', multiparty(), require('./upload.js'))
+    let param = ctx.req.body;  // 注意是在ctx的req里取值，body是除文件外的其他的参数
+    let file = ctx.req.files.file;  // files.file是文件二进制内容的
+
+    // 前端参数组合
+    const formData = new FormData();
+    formData.append("file", chunk.file);  // 文件二进制
+    formData.append("hash", hash);        // 其他辅助参数
+    formData.append("index", index);
+    formData.append("type","image");
+    formData.append("name", data.file.name);
+    return { formData };
+
+  ```
+
+
 
   .路由koa-router知识点
   ```javascript

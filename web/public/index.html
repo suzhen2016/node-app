@@ -77,9 +77,12 @@
 <script src="./jquery.js"></script>
 <script>
     $(function () {
+
         // 初始化数据
         var http = location.origin || 'http://172.20.13.179:5000';
+
         getList();
+
         // 提交
         $('#btn').click(function () {
             var obj = getParam(),url='';
@@ -100,6 +103,7 @@
                 }
             })
         })
+
         function getParam(){
             var title = $('#i-title').val();
             var ctx = $('#i-option').val();
@@ -121,12 +125,15 @@
                 option : arr
             }
         }
-        $('.clear').on('click',removeData)
+
+        $('.clear').on('click', removeData)
+
         function removeData(){
             $('#btn').removeData();
             $('#i-option').val('');
             $('#i-title').val('');
         }
+
         // 获取现有的题目
         function getList(){
             $.ajax({
@@ -149,6 +156,7 @@
                 }
             })
         }
+        
         // 选择事件
         function changeTopic() {
             $('.list>li .change').each(function(index){
@@ -172,6 +180,7 @@
                 })
             })
         }
+        
         // 查找要修改的数据并填充到可修改区域
         function getFindOne(id){
             $.ajax({
@@ -193,6 +202,7 @@
                 }
             })
         }
+        
         function dele(e,params) {
             $.ajax({
                 url:http + '/api/problem/dele',

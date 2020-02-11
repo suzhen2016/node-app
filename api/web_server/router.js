@@ -23,4 +23,13 @@ router.use('/problem', require('./problem').routes())
  */
 router.use('/JN', require('./JN').routes())
 
+
+/**
+ * 文件上传
+ */
+
+ router.use('/file', require('./upload').routes());
+
+
+
 module.exports = router
