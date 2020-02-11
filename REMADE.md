@@ -125,3 +125,6 @@
   
   引入 koa-static文件，然后app.use(static(path.join(__dirname, '../../web/public')));
   再去访问自己起的服务下的路即可：[http://172.20.12.75:5000/index.html](http://172.20.12.75:5000/index.html)
+
+
+  npm run start后起服务根据自己的ip访问 ip:5000/即可到上传页面

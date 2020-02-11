@@ -24,9 +24,6 @@
                     <img class="img" src="" alt="">
             </div>
         </div>
-        <div class="box">
-            <button class="demo">测试</button>
-        </div>
     </div>
     
 </body>
@@ -162,15 +159,6 @@
             var pro = Math.floor(process / len * 100);
             $('.process:first').text(pro);
         }
-
-        $('.demo:first').click(function(){
-            ajaxJson( NV + '/api/file/chunk-over',{
-                type: 'image',
-                hash: '1581325511702',
-                name: '前.png',
-                sum: 14
-            })
-        })
  
    });
 
