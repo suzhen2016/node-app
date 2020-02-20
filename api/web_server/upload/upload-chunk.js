@@ -32,13 +32,13 @@ class upload {
                 
                 // 创建一个可以写入的流，写入到文件 newpath这个路径下的文件中
                 var stream = fs.createWriteStream(newpath);
-                
                 // 创建一个可读流     并将创建的可写入流的    通过管道写入可写流
-                fs.createReadStream(tmpath).pipe(stream);
-
-                // 处理请求参数
+                var reader = fs.createReadStream(tmpath).pipe(stream, { end: false });
+                reader.on('end', () => {
+                    console.log(newpath)
+                    writer.end('结束');
+                });
                 response.success(ctx, {hash: param.hash,}, {code: 0, msg: '上传切片完成'})
-                
             }
 
         } catch (error) {

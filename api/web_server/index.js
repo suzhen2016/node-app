@@ -19,12 +19,17 @@ app.use(bodyParser())
 // 本地静态文件访问 直接访问该目录下的地址即可  http://172.20.13.160:5000/public/index.html
 app.use(static(path.join(__dirname, '../../web')));
 
+// 上传文件页面
 var html = router.get("/", (ctx)=>{
     // 文件显示读取
     ctx.body = require("fs").readFileSync(path.join(__dirname, '../../web/upload/index.html'), "utf-8");
     // ctx.body = '你好'
 });
 
+// 拉取百度文库内容
+router.get('/bdwd', (ctx) => {
+    ctx.body = require("fs").readFileSync(path.join(__dirname, './index.html'), "utf-8");
+})
 // md5加密之后数据
 fs.readFile(path.join(__dirname, './upload/files/output.txt'), function(err, buf) {
     console.log(md5(buf));

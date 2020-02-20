@@ -27,9 +27,12 @@ router.use('/JN', require('./JN').routes())
 /**
  * 文件上传
  */
+router.use('/file', require('./upload').routes());
 
- router.use('/file', require('./upload').routes());
-
+/**
+ * 文档爬虫
+ */
+// router.use('/bdwk', require('./bdwk').routes());
 
 
 module.exports = router

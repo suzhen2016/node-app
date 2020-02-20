@@ -46,20 +46,26 @@ class upload {
         const filePath = path.join(__dirname, './files/'+ param.name);
         // const chunkPaths = await fs.readdir(chunkDir);
         // await fse.writeFile(filePath, "");
-        var error= '上传成功';
+        var err= '上传成功';
         try {
             for(let i=0; i< param.sum; i++) {
-                var data = fs.readFileSync(`${chunkDir}-${i}`);
-                fs.appendFileSync(filePath, data);
-                console.log(`${chunkDir}-${i}`)
-                fs.unlinkSync(`${chunkDir}-${i}`);  // 删除切片文件
+                if (fs.existsSync(`${chunkDir}-${i}`)) {
+                    
+                    var data = fs.readFileSync(`${chunkDir}-${i}`);
+                    fs.appendFileSync(filePath, data);
+                    // console.log(`${chunkDir}-${i}`)
+                    fs.unlinkSync(`${chunkDir}-${i}`);  // 删除切片文件
+                } else {
+                    console.log(`${chunkDir}-${i},暂时不存在`);
+                    // i--;
+                }
             }
         } catch (error) {
-            error = '上传失败';
+            err = '上传失败';
             console.log(error)
+            return err;
         }
-        return error;
-        
+        return err;
         // fse.rmdirSync(chunkDir); // 合并后删除保存切片的目录
       };
 }

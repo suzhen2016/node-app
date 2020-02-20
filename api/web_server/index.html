@@ -6,7 +6,60 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+<style>
+    input{
+        width: 300px;
+        height: 26px;
+        padding: 0 4px; 
+        color: blueviolet;
+    }
+    input:focus {
+        outline: medium;
+    }
+    button {
+        width: 70px;
+        height: 30px;
+        border: 0;
+        color: #fff;
+        border-radius: 3px;
+        cursor: pointer;
+        background-color: blueviolet;
+    }
+    button:focus {
+        outline: magenta;
+    }
+</style>
 <body>
-    <h2>你好，苏氏之道</h2>
+    <h2>查询百度文档更简单</h2>
+    <p>输入要查看的百度文库的地址：<input type="text" name="" id="url"></p>
+    <button id="btn">一键查询</button>
 </body>
+<script src="../public/jquery.js"></script>
+<script>
+
+    $(function(){
+        console.log(window.location)
+        let api = window.location.origin;
+        $('#btn').click(function(){
+            let l = $('#url').val();
+            if (!l){
+                alert('请填写要查询的地址')
+                return false;
+            } 
+            console.log(api)
+
+            $.ajax({
+                url:  api + '/api/bdwk/find-wd',
+                type: 'POST',
+                data: {url: l},
+                success :  function(res){
+                    console.log(res)
+                },
+                error: function(res) {
+                    console.log('JSON错误',res);
+                }
+            })
+        })
+    })
+</script>
 </html>

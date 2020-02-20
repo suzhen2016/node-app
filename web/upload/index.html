@@ -12,7 +12,8 @@
     <div class="main">
         <div class="box form">
             <h4>1、formData上传图片文件</h4>
-            <input type="file" name="file" id="file" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg">
+            <!-- <input type="file" name="file" id="file" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg">             -->
+            <input type="file" name="file" id="file">
             <button id="form-btn"> 上传 </button>
         </div>
         <div class="box drop">
@@ -35,7 +36,7 @@
 <!-- <script src="./upload/drop.js"></script> -->
 <script>
    var upLoad = upload.use();
-   var NV = "http://192.168.0.101:5000";
+   var NV = "http://192.168.0.102:5000";
    $(function(){
        // formdata提交数据
        var ajax = function(url,data,cb) {
@@ -76,7 +77,7 @@
                 alert('请选择文件');
                 return false;
             }
-            console.log(file)
+            // console.log(file)
             url = NV + '/api/file/upload';
             var formData = new FormData();
             //接口接收参数 键值形式 添加到formData中
@@ -95,7 +96,7 @@
             }
             // 获得文件
             let file = upLoad.getDropFile();
-            var size = Math.floor(file.size / 150);
+            var size = Math.floor(file.size / 15);
             // 文件切片数
             var blobs = upLoad.createFileChunk(file, size);
             console.log(file.name + '切片数' + blobs.length)
@@ -127,38 +128,37 @@
             // 转化成异步请求函数
             .map(async ({ formData }) => {
                 
-                ajax( url,formData,function(res){
+                ajax( url,formData, function(res){
                     if(res.code == 0) {
-                        updateProcess(data.chunks.length + 3);
+                        // updateProcess(data.chunks.length);
+                        process+=1;
+                        var pro = Math.floor(process / (data.chunks.length +3) * 100);
+                        $('.process:first').text(pro);
+                        if(process == data.chunks.length){  // 通知服务端合并文件流
+                            merageFile();
+                        }
                     }
                 });
 
             });
              // 并发发送切片请求
-            Promise.all(requestList);
-
-            setTimeout(()=>{
+            const foo = await Promise.all(requestList);
+            function merageFile(){
                 ajaxJson( NV + '/api/file/chunk-over',{
                     type: 'image',
                     hash: hash,
                     name: data.file.name,
                     sum: requestList.length
-                },function(res){
+                },(res)=>{
                     if(res.code == 0) {
                         $('.process:first').text(100);
                         process = 0;
                     }
                     console.log(res.message)
                 });
-            },2000)
-
+            }
         };
         
-        function updateProcess(len) {
-            process+=1;
-            var pro = Math.floor(process / len * 100);
-            $('.process:first').text(pro);
-        }
  
    });
 
