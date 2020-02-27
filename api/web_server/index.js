@@ -30,6 +30,8 @@ var html = router.get("/", (ctx)=>{
 router.get('/bdwd', (ctx) => {
     ctx.body = require("fs").readFileSync(path.join(__dirname, './index.html'), "utf-8");
 })
+
+
 // md5加密之后数据
 fs.readFile(path.join(__dirname, './upload/files/output.txt'), function(err, buf) {
     console.log(md5(buf));

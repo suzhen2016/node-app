@@ -32,7 +32,7 @@ router.use('/file', require('./upload').routes());
 /**
  * 文档爬虫
  */
-// router.use('/bdwk', require('./bdwk').routes());
+router.use('/bdwk', require('./bdwk').routes());
 
 
 module.exports = router

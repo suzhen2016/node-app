@@ -1,6 +1,8 @@
 # 开启数据库
 /Users/suzhen/Library/mongodb/mongodb-osx-x86_64-4.0.3/bin/mongod --dbpath /Users/suzhen/library/mongodb/mongodb-osx-x86_64-4.0.3/data/db
 
+# /usr/local/opt/mongodb-community/bin/mongod --dbpath 
+
 # cd /usr/local/mongodb/bin
 # sudo ./mongod
 

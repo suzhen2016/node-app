@@ -141,9 +141,4 @@ class db_help{
 
 }
 
-// setInterval(async ()=>{
-//     let a = await db_help.findOne("books");
-//     console.log(a);
-// },1000);
-
 module.exports = db_help;

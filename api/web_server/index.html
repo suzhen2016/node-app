@@ -33,27 +33,28 @@
     <h2>查询百度文档更简单</h2>
     <p>输入要查看的百度文库的地址：<input type="text" name="" id="url"></p>
     <button id="btn">一键查询</button>
+    <div id="container">
+        内容区域
+    </div>
 </body>
 <script src="../public/jquery.js"></script>
 <script>
 
     $(function(){
-        console.log(window.location)
         let api = window.location.origin;
         $('#btn').click(function(){
-            let l = $('#url').val();
-            if (!l){
+            let src = $('#url').val();
+            if (!src){
                 alert('请填写要查询的地址')
                 return false;
             } 
-            console.log(api)
-
             $.ajax({
-                url:  api + '/api/bdwk/find-wd',
+                url:  api + '/api/bdwk/getTextByurl',
                 type: 'POST',
-                data: {url: l},
+                data: { src },
                 success :  function(res){
-                    console.log(res)
+                    console.log(res.model)
+                    $('#container').text(res.model)
                 },
                 error: function(res) {
                     console.log('JSON错误',res);
