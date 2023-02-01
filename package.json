@@ -27,7 +27,7 @@
     "koa2-multiparty": "^1.0.1",
     "md5": "^2.2.1",
     "mongodb": "^3.2.7",
-    "mongoose": "^5.9.2",
+    "mongoose": "^5.13.15",
     "multiparty": "^4.2.1",
     "nodemon": "^2.0.2",
     "request": "^2.88.2",
